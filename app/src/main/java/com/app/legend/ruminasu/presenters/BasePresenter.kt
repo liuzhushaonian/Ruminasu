@@ -8,8 +8,7 @@ abstract class BasePresenter<T> {
 
     private lateinit var res: Reference<T>
 
-
-    public fun attachView(view: T){
+    fun attachView(view: T){
         res=WeakReference<T>(view)
     }
 
@@ -19,13 +18,13 @@ abstract class BasePresenter<T> {
 
     }
 
-    public fun isViewAttached():Boolean{
+    fun isViewAttached():Boolean{
 
         return res.get()!=null
 
     }
 
-    public fun detachView(){
+    fun detachView(){
         res.clear()
     }
 

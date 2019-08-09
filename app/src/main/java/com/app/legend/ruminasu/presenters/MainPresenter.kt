@@ -23,7 +23,7 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
         this.activty = this.getView()!!
     }
 
-    public fun getData(){
+    fun getData(){
 
         data()
 
@@ -89,7 +89,7 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
                 comic.title=f.name.replace(".zip","")//去掉.zip后缀
                 comic.path=f.absolutePath
 
-                ZipUtils.getBook(f.absolutePath)
+                ZipUtils.getFirstBook(f.absolutePath)
 
                 comicList.add(comic)
 

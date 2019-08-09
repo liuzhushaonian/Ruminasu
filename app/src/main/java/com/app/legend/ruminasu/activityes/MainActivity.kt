@@ -24,6 +24,8 @@ class MainActivity : BasePresenterActivity <IMainActivity,MainPresenter>() ,IMai
 
     private var permission=Array(1){ Manifest.permission.WRITE_EXTERNAL_STORAGE}
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,7 +34,7 @@ class MainActivity : BasePresenterActivity <IMainActivity,MainPresenter>() ,IMai
 
         initList()
 
-        presenter=createPresenter()
+//        presenter=createPresenter()
 
         initToolbar()
         getPermission()
@@ -65,7 +67,7 @@ class MainActivity : BasePresenterActivity <IMainActivity,MainPresenter>() ,IMai
 
     private fun initToolbar(){
 
-        toolbar.title=""
+        this.toolbar.title=""
 
         setSupportActionBar(toolbar)
 
