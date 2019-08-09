@@ -74,7 +74,7 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
         for (f:File in list){
 
-            val comic=Comic(null,f.name,0,0,null)
+            val comic=Comic(null,f.name,null,0,0)
 
             if (f.isDirectory){
 
