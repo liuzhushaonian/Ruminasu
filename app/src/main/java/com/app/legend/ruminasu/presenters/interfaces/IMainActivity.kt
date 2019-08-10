@@ -6,4 +6,6 @@ interface IMainActivity {
 
     fun setData(list: List<Comic>)
 
+    fun showInfo()
+
 }

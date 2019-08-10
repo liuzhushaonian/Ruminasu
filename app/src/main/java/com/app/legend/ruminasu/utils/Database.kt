@@ -4,6 +4,8 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import com.app.legend.ruminasu.beans.BookMark
 import com.app.legend.ruminasu.beans.Chapter
 import com.app.legend.ruminasu.beans.Comic
 import com.app.legend.ruminasu.beans.Path
@@ -102,7 +104,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 获取用户添加的路径
      */
-    fun getPaths():List<Path>{
+    public fun getPaths():List<Path>{
 
         val sql="select * from t_path"
         val cursor:Cursor=sqLiteDatabase.rawQuery(sql,null)
@@ -124,8 +126,11 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 添加路径
      */
-    fun addPaths(path:String):Int{
-        val sql= "insert into t_path (path) values($path)"
+    public fun addPaths(path:String):Int{
+        val sql= "insert into t_path (path) values('$path')"
+
+        Log.d("sql--->>",sql)
+
         var result:Int=-1
         try {
             sqLiteDatabase.execSQL(sql)
@@ -139,7 +144,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 删除路径
      */
-    fun deletePath(p:Path):Int{
+    public fun deletePath(p:Path):Int{
 
         val sql="delete from t_path where id = ${p.id}"
         var result=-1
@@ -167,7 +172,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
      * 添加漫画到表内
      * 插入前先查询该漫画是否已存在，检查title以及path，如果相同则不插入
      */
-    fun addComic(comic: Comic){
+    public fun addComic(comic: Comic){
 
 
         val search="select from t_comic where title=${comic.title} and path=${comic.path}";
@@ -191,7 +196,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 更新漫画信息，隐藏或是封面替换
      */
-    fun updateComic(comic: Comic):Int{
+    public fun updateComic(comic: Comic):Int{
 
         val up="update t_comic set hide = ${comic.hide} and book = ${comic.book} where id = ${comic.id}"
 
@@ -211,7 +216,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 删除漫画
      */
-    fun deleteComic(comic: Comic):Int{
+    public fun deleteComic(comic: Comic):Int{
 
         val delete="delete from t_comic where id = ${comic.id}"
         var r=-1
@@ -231,7 +236,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 查询全部
      */
-    fun getAllComic():List<Comic>{
+    public fun getAllComic():List<Comic>{
 
         val all:MutableList<Comic> =ArrayList()
 
@@ -266,7 +271,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 获取隐藏或是非隐藏的漫画，入参-1非隐藏，入参1为隐藏
      */
-    fun getComics(hide:Int):List<Comic>{
+    public fun getComics(hide:Int):List<Comic>{
 
         val all:MutableList<Comic> =ArrayList()
         val select="select * from t_comic where hide =$hide"
@@ -295,7 +300,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
      * 添加章节
      * 检测是否已存在，根据name以及comic_id
      */
-    fun addChapters(list: List<Chapter>):Int{
+    public fun addChapters(list: List<Chapter>):Int{
 
         var r=-1;
 
@@ -312,7 +317,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     }
 
 
-    fun updateChapter(chapter: Chapter):Int{
+    public fun updateChapter(chapter: Chapter):Int{
 
         var r=-1
         val update="update t_chapter set read =${chapter.read} , book = ${chapter.book},c_order=${chapter.order},type=${chapter.type} where id = ${chapter.id}"
@@ -328,7 +333,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     /**
      * 根据漫画查询该漫画的章节
      */
-    fun getChapters(comic: Comic):List<Chapter>{
+    public fun getChapters(comic: Comic):List<Chapter>{
 
         val chapters:MutableList<Chapter> = ArrayList()
 
@@ -358,8 +363,100 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
         cursor.close()
 
         return chapters
+    }
+
+    /**
+     * ----------------书签表------------------
+     */
 
 
+    /**
+     * 添加书签
+     */
+    public fun addMark(comic: Comic,chapter: Chapter,page:Int):Int{
+
+        var r=-1;
+
+        val add="insert into t_bookmark (comic_id,chapter_id,page) values (${comic.id},${chapter.id},$page)"
+
+        r=try {
+            sqLiteDatabase.execSQL(add)
+            1
+        }catch (e:Exception){
+            -1
+        }
+
+        return r
+
+    }
+
+    /**
+     * 删除一个书签
+     */
+    public fun deleteMark(bookMark: BookMark):Int{
+
+        val delete="delete from t_bookmark where id = ${bookMark.id}"
+
+        val r=try {
+
+            sqLiteDatabase.execSQL(delete)
+            1
+        }catch (e:Exception){
+
+            -1
+        }
+
+        return r
+    }
+
+
+    /**
+     * 根据漫画获取该漫画的书签
+     */
+    public fun getComicMark(comic: Comic):List<BookMark>{
+
+        val marks:MutableList<BookMark> =ArrayList()
+
+        val get="select * from t_bookmark where comic_id = ${comic.id}"
+
+        val cursor:Cursor=sqLiteDatabase.rawQuery(get,null);
+
+        if (cursor.moveToFirst()){
+
+            do {
+
+                val m= BookMark(cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getInt(cursor.getColumnIndex("comic_id")),
+                    cursor.getInt(cursor.getColumnIndex("chapter_id")),
+                    cursor.getInt(cursor.getColumnIndex("page"))
+                    )
+
+                marks.add(m)
+            }while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return marks
+    }
+
+    /**
+     * --------------------------------历史表------------------------------
+     */
+
+    /**
+     * 添加阅读历史，先查询是否已存在该漫画，是就更新，不是就添加，在线程内执行
+     */
+    public fun addHistory(comic: Comic,chapter: Chapter,page: Int){
+        val get="select comic_id from t_history where comic_id = ${comic.id} limit 1"
+        val cursor:Cursor=sqLiteDatabase.rawQuery(get,null)
+        if (cursor.count>0){//已存在，更新
+            val update="update t_history set chapter_id = ${chapter.id},page = $page where comic_id = ${comic.id}"
+            sqLiteDatabase.execSQL(update)
+        }else{//不存在
+            val add="insert into t_history (comic_id,chapter_id,page) values (${comic.id},${chapter.id},$page)"
+            sqLiteDatabase.execSQL(add)
+        }
+        cursor.close()
     }
 
 

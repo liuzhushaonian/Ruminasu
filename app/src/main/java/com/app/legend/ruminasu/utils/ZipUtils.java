@@ -1,14 +1,11 @@
 package com.app.legend.ruminasu.utils;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.util.Log;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
-
 import java.io.*;
-import java.nio.channels.FileChannel;
 import java.util.List;
 
 public class ZipUtils {

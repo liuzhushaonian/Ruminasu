@@ -3,4 +3,15 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="no_path_info">请添加漫画路径，轻触即可选取并添加</string>
+
+    <string name="no_file_info">居然没找到一本漫画，看样子路径下的漫画已经不存在了呢~</string>
+
+    <string name="order">排序方式</string>
+
+    <string name="add">添加路径</string>
+
+    <string name="reload">重新导入</string>
+
 </resources>
