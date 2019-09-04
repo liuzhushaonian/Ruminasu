@@ -38,7 +38,7 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
         Observable.create(ObservableOnSubscribe<List<Comic>> {
             e->
 
-            val comics=Database.getDefault(activity).getComics(Conf.HIDE)
+            val comics=Database.getDefault(activity).getComics(Conf.SHOW)
 
             e.onNext(comics)
             e.onComplete()
@@ -132,6 +132,8 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
                 onNext = {
                     activty.setData(it)
+                    activty.load(it)
+//                    activty.load(it)
                 }
 
             )
@@ -147,17 +149,19 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
         for (f:File in list){
 
-            val comic:Comic=Comic("",f.name,"",0,0)
+            val comic=Comic("",f.name,"",-1,0,1,false)
 
             if (f.isDirectory){
                 comic.path=f.absolutePath
                 comic.title=f.name
+                comic.zip=-1
                 comicList.add(comic)
             }else if (f.name.endsWith("zip")){
 
                 comic.title=f.name.replace(".zip","")//去掉.zip后缀
                 comic.path=f.absolutePath
-//                ZipUtils.getFirstBook(f.absolutePath)
+                comic.zip=1
+//                ZipUtils.getFirstBook(f.absolutePath,comic.title)
                 comicList.add(comic)
             }
         }
@@ -176,6 +180,44 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
             Toast.makeText(activity,"路径添加失败",Toast.LENGTH_LONG).show()
 
         }
+
+    }
+
+    /**
+     * 获取id，以及保存封面
+     */
+    fun saveComicAndGetBook(a: Activity, comics: List<Comic>){
+
+        Observable.create(ObservableOnSubscribe<Int> {
+
+            for (c in comics){
+
+                //先获取封面，再保存到数据库
+                val book=ZipUtils.getFirstBook(c.path,c.title)
+                c.book=book//赋值，无论是不是null,封面获取完成
+                Database.getDefault(a).addComic(c)
+
+                val p=comics.indexOf(c)
+
+                it.onNext(p)
+
+            }
+
+            it.onComplete()
+
+        }).observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+
+                    activty.refresh(it)
+
+                },
+
+                onComplete = {
+
+                }
+            )
 
     }
 

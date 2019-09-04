@@ -5,6 +5,14 @@ package com.app.legend.ruminasu.utils
  */
 class ChaptersNameUtils {
 
+    companion object{
 
+        public fun isImage(string: String):Boolean{
+
+            return string.endsWith(".jpg")||string.endsWith(".png")
+
+        }
+
+    }
 
 }

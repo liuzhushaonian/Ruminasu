@@ -8,4 +8,8 @@ interface IMainActivity {
 
     fun showInfo()
 
+    fun refresh(p:Int)
+
+    fun load(list: List<Comic>)
+
 }

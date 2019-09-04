@@ -9,11 +9,11 @@
 
 
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/scroll_layout"
-        >
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:id="@+id/scroll_layout"-->
+<!--        >-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,67 +21,75 @@
             android:orientation="vertical"
             >
 
-            <FrameLayout
+            <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="wrap_content"
+                android:id="@+id/comic_info_toolbar"
+                android:background="@color/colorPrimary"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                >
 
-                <ImageView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/comic_book"
-                    android:contentDescription="@string/app_name"
-                    />
+                    android:gravity="center_horizontal"
+                    android:layout_marginEnd="16dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/app_name"
+                        android:gravity="center"
+                        android:textSize="18sp"
+                        android:textColor="@color/colorWhite"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:id="@+id/comic_title"
+                        />
+
+                </LinearLayout>
 
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/comic_title"
-                    android:text="@string/app_name"
-                    android:textSize="24sp"
-                    android:padding="16dp"
-                    android:layout_gravity="bottom"
-                    />
+            </androidx.appcompat.widget.Toolbar>
 
 
-            </FrameLayout>
-
-
-
-            <android.support.design.widget.TabLayout
+            <com.google.android.material.tabs.TabLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/comic_type"
                 >
 
 
-            </android.support.design.widget.TabLayout>
+            </com.google.android.material.tabs.TabLayout>
 
-            <android.support.v4.view.ViewPager
+            <androidx.viewpager.widget.ViewPager
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/comic_chapter_pager"
                 >
 
 
 
-
-            </android.support.v4.view.ViewPager>
+            </androidx.viewpager.widget.ViewPager>
 
 
 
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+<!--    </androidx.core.widget.NestedScrollView>-->
 
-    <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/comic_info_toolbar"
-        >
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        />
 
 
-    </android.support.v7.widget.Toolbar>
 
 </FrameLayout>

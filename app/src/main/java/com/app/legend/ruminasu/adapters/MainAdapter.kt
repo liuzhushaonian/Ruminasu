@@ -1,6 +1,6 @@
 package com.app.legend.ruminasu.adapters
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.app.legend.ruminasu.R
+import com.app.legend.ruminasu.activityes.callBack.OnComicClick
 import com.app.legend.ruminasu.beans.Comic
 import com.bumptech.glide.Glide
 
@@ -16,6 +17,13 @@ import com.bumptech.glide.Glide
 class MainAdapter : BaseAdapter<MainAdapter.ViewHolder>(){
 
     private var comicList: List<Comic>? =null
+    private var onComicClick:OnComicClick?=null
+
+    public fun setClick(onComicClick:OnComicClick){
+
+        this.onComicClick=onComicClick
+
+    }
 
 
     public fun setComicList(list: List<Comic>){
@@ -32,7 +40,10 @@ class MainAdapter : BaseAdapter<MainAdapter.ViewHolder>(){
 
         holder.view.setOnClickListener {
 
+            val p=holder.adapterPosition
+            val c=comicList!!.get(p)
 
+            onComicClick!!.comicClick(p,c)
 
         }
 
@@ -46,7 +57,11 @@ class MainAdapter : BaseAdapter<MainAdapter.ViewHolder>(){
 
         p0.title.text = comic?.title
 
-        Glide.with(p0.view).load(R.drawable.mo).into(p0.book)
+        Glide.with(p0.view)
+            .load(comic!!.book)
+            .error(R.drawable.mo)
+            .fallback(R.drawable.mo)
+            .into(p0.book)
 
     }
 
@@ -81,7 +96,7 @@ class MainAdapter : BaseAdapter<MainAdapter.ViewHolder>(){
             val space=itemView.resources.getDimensionPixelOffset(R.dimen.item_space)*4
             val width:Int=((itemView.resources.displayMetrics.widthPixels-space)/3)
 
-            Log.d("width--->>>",space.toString())
+//            Log.d("width--->>>",space.toString())
 
             val height:Int=(width*1.333333).toInt()
 

@@ -5,10 +5,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.app.legend.ruminasu.beans.BookMark
-import com.app.legend.ruminasu.beans.Chapter
-import com.app.legend.ruminasu.beans.Comic
-import com.app.legend.ruminasu.beans.Path
+import com.app.legend.ruminasu.beans.*
 import java.lang.Exception
 
 /**
@@ -31,7 +28,8 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
                 "title TEXT NOT NULL," +
                 "hide INTEGER default(-1)," +
                 "path TEXT," +
-                "book TEXT" +
+                "book TEXT," +
+                "is_zip INTEGER default(-1)" +//是否为zip,是1，否-1
                 ")"
 
         //章节表
@@ -41,7 +39,9 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
                 "read INTEGER default(-1)," +
                 "book TEXT," +
                 "c_order INTEGER," +
-                "comic_id INTEGER" +
+                "comic_id INTEGER," +
+                "order_name TEXT," +
+                "c_type INTEGER" +
                 ")"
 
         //书签表
@@ -66,6 +66,14 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "path TEXT NOT NULL UNIQUE" +
                 ")"
+
+        //类型表
+        const val T_TYPE="CREATE TABLE IF NOT EXISTS t_type (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "comic_id INTEGER," +
+                "content TEXT" +
+                ")"
+
 
         private var database: Database? = null
 
@@ -94,6 +102,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
             db.execSQL(T_BOOKMARK)
             db.execSQL(T_HISTORY)
             db.execSQL(T_PATH)
+            db.execSQL(T_TYPE)
         }
     }
 
@@ -175,7 +184,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
     public fun addComic(comic: Comic){
 
 
-        val search="select from t_comic where title=${comic.title} and path=${comic.path}";
+        val search="select * from t_comic where title='${comic.title}' and path='${comic.path}'";
 
         val cursor:Cursor=sqLiteDatabase.rawQuery(search,null);
 
@@ -187,9 +196,26 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
 
         }
 
-        val insert="insert into t_comic (title,hide,path,book) values (${comic.title},${comic.hide},${comic.path},${comic.book})"
+        val insert="insert into t_comic (title,hide,path,book,is_zip) values ('${comic.title}',${comic.hide},'${comic.path}','${comic.book}',${comic.zip})"
 
         sqLiteDatabase.execSQL(insert)
+
+        val last="select last_insert_rowid() from t_comic"//获取最新插入的id
+
+        val cursor1 = sqLiteDatabase.rawQuery(last, null)
+
+        if (cursor1.moveToFirst()) {
+
+            val id = cursor1.getInt(0)
+
+            comic.id=id//设置id
+
+            //                    Log.d("result----->>>",""+result);
+
+        }
+
+        cursor1.close()
+
 
     }
 
@@ -198,7 +224,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
      */
     public fun updateComic(comic: Comic):Int{
 
-        val up="update t_comic set hide = ${comic.hide} and book = ${comic.book} where id = ${comic.id}"
+        val up="update t_comic set hide = ${comic.hide},book = '${comic.book}' where id = ${comic.id}"
 
         var result=-1
 
@@ -252,7 +278,9 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
                     cursor.getString(cursor.getColumnIndex("title")),
                     cursor.getString(cursor.getColumnIndex("path")),
                     cursor.getInt(cursor.getColumnIndex("hide")),
-                    cursor.getInt(cursor.getColumnIndex("id"))
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getInt(cursor.getColumnIndex("is_zip")),
+                    true
                     )
 
                 all.add(comic)
@@ -282,7 +310,9 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
                     cursor.getString(cursor.getColumnIndex("title")),
                     cursor.getString(cursor.getColumnIndex("path")),
                     cursor.getInt(cursor.getColumnIndex("hide")),
-                    cursor.getInt(cursor.getColumnIndex("id"))
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getInt(cursor.getColumnIndex("is_zip")),
+                    true
                 )
                 all.add(comic)
             }while (cursor.moveToNext())
@@ -297,30 +327,46 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
 
 
     /**
-     * 添加章节
-     * 检测是否已存在，根据name以及comic_id
+     * 添加章节到数据库，先检测是否已存在，不存在就加入
+     * 检测方法是查询该漫画的id以及章节名是否同时存在
      */
-    public fun addChapters(list: List<Chapter>):Int{
+    public fun addChapter(comic: Comic,chapter: Chapter){
 
-        var r=-1;
+        val s="select * from t_chapter where comic_id = ${comic.id} and name = '${chapter.name}'"
+        val cursor= sqLiteDatabase.rawQuery(s,null)
 
-        for (c in list) {
+        if (cursor.count<=0){//不存在，保存
 
-            val add = "insert into t_chapter (read,book,c_order,type) values (${c.read},${c.book},${c.order},${c.type})"
+            val add = "insert into t_chapter (name,read,book,c_order,c_type,order_name,comic_id) values ('${chapter.name}',${chapter.read},'${chapter.book}',${chapter.order},${chapter.type},'${chapter.orderNmae}',${chapter.comicId})"
 
             sqLiteDatabase.execSQL(add)
 
-            r=1;
+            //获取id，设置上
+
+            val last="select last_insert_rowid() from t_chapter"//获取最新插入的id
+
+            val cursor1 = sqLiteDatabase.rawQuery(last, null)
+
+            if (cursor1.moveToFirst()) {
+
+                val id = cursor1.getInt(0)
+
+                chapter.id=id//设置id
+            }
+            cursor1.close()
         }
 
-        return r
+        cursor.close()
+
+
     }
+
 
 
     public fun updateChapter(chapter: Chapter):Int{
 
         var r=-1
-        val update="update t_chapter set read =${chapter.read} , book = ${chapter.book},c_order=${chapter.order},type=${chapter.type} where id = ${chapter.id}"
+        val update="update t_chapter set read =${chapter.read} , book = '${chapter.book}',c_order=${chapter.order},c_type=${chapter.type},order_name='${chapter.orderNmae}' where id = ${chapter.id}"
         r = try {
             sqLiteDatabase.execSQL(update)
             1
@@ -347,10 +393,12 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
 
                 val chapter=Chapter(cursor.getString(cursor.getColumnIndex("name")),
                     cursor.getInt(cursor.getColumnIndex("c_order")),
-                    cursor.getString(cursor.getColumnIndex("type")),
+                    cursor.getInt(cursor.getColumnIndex("c_type")),
                     cursor.getInt(cursor.getColumnIndex("read")),
                     cursor.getString(cursor.getColumnIndex("book")),
-                    cursor.getInt(cursor.getColumnIndex("id"))
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getString(cursor.getColumnIndex("order_name")),
+                    cursor.getInt(cursor.getColumnIndex("comic_id"))
                     )
 
                 chapters.add(chapter)
@@ -363,6 +411,46 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
         cursor.close()
 
         return chapters
+    }
+
+
+    /**
+     * 获取type章节，搜索数据库
+     */
+    public fun getChaptersByType(comic: Comic,type: Type):List<Chapter>{
+
+        val chapters:MutableList<Chapter> = ArrayList()
+
+        val select="select * from t_chapter where comic_id = ${comic.id} and c_type = ${type.id}"
+
+        val cursor=sqLiteDatabase.rawQuery(select,null)
+
+        if (cursor.moveToFirst()){
+
+            do {
+
+                val chapter=Chapter(cursor.getString(cursor.getColumnIndex("name")),
+                    cursor.getInt(cursor.getColumnIndex("c_order")),
+                    cursor.getInt(cursor.getColumnIndex("c_type")),
+                    cursor.getInt(cursor.getColumnIndex("read")),
+                    cursor.getString(cursor.getColumnIndex("book")),
+                    cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getString(cursor.getColumnIndex("order_name")),
+                    cursor.getInt(cursor.getColumnIndex("comic_id"))
+                )
+
+                chapters.add(chapter)
+
+            }while (cursor.moveToNext())
+
+
+        }
+
+        cursor.close()
+
+        return chapters
+
+
     }
 
     /**
@@ -458,6 +546,70 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
         }
         cursor.close()
     }
+
+    /**
+     * -----------------------------类型表------------------------------
+     */
+
+    /**
+     * 添加类型，传入……？type对象吧……
+     * 返回id? 这怎么返回？
+     */
+    public fun addTypes(type:Type){
+
+        //查找同一漫画同样的type，如果存在就不保存
+        val select="select * from t_type where comic_id = ${type.comicId} and content = '${type.content}'"
+
+        val cursor=sqLiteDatabase.rawQuery(select,null)
+
+        if (cursor.count<=0){//不存在
+
+            val add ="insert into t_type (comic_id,content) values (${type.comicId},'${type.content}')"
+
+            sqLiteDatabase.execSQL(add)
+
+            val last="select last_insert_rowid() from t_comic"//获取最新插入的id
+
+            val cursor1 = sqLiteDatabase.rawQuery(last, null)
+
+            if (cursor1.moveToFirst()) {
+
+                val id = cursor1.getInt(0)
+
+                type.id=id//设置id
+            }
+            cursor1.close()
+        }
+        cursor.close()
+    }
+
+
+    /**
+     * 获取漫画的type
+     */
+    public fun getTypeByComicId(comic: Comic):MutableList<Type>{
+
+        val list = ArrayList<Type>()
+        val get="select * from t_type where comic_id = ${comic.id}"
+        val cursor=sqLiteDatabase.rawQuery(get,null)
+        if (cursor.moveToFirst()){
+            do {
+                val id=cursor.getInt(cursor.getColumnIndex("id"))
+                val comicId=cursor.getInt(cursor.getColumnIndex("comic_id"))
+                val content=cursor.getString(cursor.getColumnIndex("content"))
+                val type=Type(id,comicId,content)
+
+                list.add(type)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+
+        return list
+
+    }
+
+
 
 
 }
