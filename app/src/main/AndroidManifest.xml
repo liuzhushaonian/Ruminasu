@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.app.legend.ruminasu">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
         android:name=".utils.RuminasuApp"
         android:allowBackup="true"
@@ -14,11 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/MyTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <service
-            android:name=".service.BookLoadIntentService"
-            android:exported="false"></service>
+        <activity android:name=".activityes.ComicViewActivity"></activity>
 
-        <activity android:name=".activityes.ComicInfoActivity"></activity>
+        <activity android:name=".activityes.ComicInfoActivity" />
+
         <activity android:name=".activityes.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".service.BookLoadIntentService"
+            android:exported="false" />
     </application>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

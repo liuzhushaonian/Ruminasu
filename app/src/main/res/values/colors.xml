@@ -13,7 +13,7 @@
     <color name="colorLightBlue">#03A9F4</color>
     <color name="colorBrown">#795548</color>
     <color name="colorCP">#00c4ff</color>
-    <color name="colorAlphaBlack">#20000000</color>
+    <color name="colorAlphaBlack">#80000000</color>
     <color name="colorBlueGrey">#607d8b</color>
     <color name="colorPink">#e91e63</color>
     <color name="colorPurple">#9c27b0</color>
@@ -29,7 +29,7 @@
     <color name="colorAmber">#ffc107</color>
     <color name="colorDeepOrange">#ff5722</color>
     <color name="colorTransparent">#00000000</color>
-    <color name="colorMi">#dfdfdf</color>
+    <color name="colorMi">#FDF9F9</color>
 
 
 </resources>

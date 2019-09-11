@@ -74,6 +74,17 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
                 "content TEXT" +
                 ")"
 
+        const val T_PICTURE="CREATE TABLE IF NOT EXISTS t_picture (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "content TEXT," +
+                "p_order INTEGER," +
+                "chapter_id INTEGER," +
+                "zip INTEGER," +
+                "comic_title TEXT," +
+                "comic_path TEXT," +
+                "chapter_name TEXT" +
+                ")"
+
 
         private var database: Database? = null
 
@@ -103,6 +114,7 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
             db.execSQL(T_HISTORY)
             db.execSQL(T_PATH)
             db.execSQL(T_TYPE)
+            db.execSQL(T_PICTURE)
         }
     }
 
@@ -608,6 +620,87 @@ class Database(context: Context?, name: String?, factory: SQLiteDatabase.CursorF
         return list
 
     }
+
+
+    /**
+     * ---------------图片表，保存图片信息----------------
+     */
+
+    /**
+     * 添加图片信息
+     */
+    public fun addPic(comic: Comic,chapter: Chapter,picture: Picture){
+
+        val get="select * from t_picture where chapter_id = ${chapter.id} and content = '${picture.content}'"
+
+        val cur=sqLiteDatabase.rawQuery(get,null)
+
+        if (cur.count>0){
+
+            return
+
+        }
+
+        cur.close()
+
+        val add="insert into t_picture (content,p_order,chapter_id,zip,comic_title,comic_path,chapter_name) values ('${picture.content}',${picture.order},${chapter.id},${comic.zip},'${comic.title}','${comic.path}','${chapter.name}')"
+
+        sqLiteDatabase.execSQL(add)
+
+        val last="select last_insert_rowid() from t_picture"//获取最新插入的id
+
+        val cursor1 = sqLiteDatabase.rawQuery(last, null)
+
+        if (cursor1.moveToFirst()) {
+
+            val id = cursor1.getInt(0)
+
+            picture.id=id//设置id
+        }
+        cursor1.close()
+
+    }
+
+    /**
+     * 获取图片信息
+     */
+    public fun getPicInfo(chapter: Chapter):MutableList<Picture>{
+
+        val pictures:MutableList<Picture> =ArrayList()
+        val get="select * from t_picture where chapter_id = ${chapter.id}"
+
+        val cursor=sqLiteDatabase.rawQuery(get,null)
+
+        if (cursor.moveToFirst()){
+
+            do {
+                val picture=Picture(cursor.getInt(cursor.getColumnIndex("id")),
+                    cursor.getString(cursor.getColumnIndex("content")),
+                    cursor.getInt(cursor.getColumnIndex("p_order")),
+                    cursor.getInt(cursor.getColumnIndex("chapter_id")),
+                    cursor.getInt(cursor.getColumnIndex("zip")),
+                    cursor.getString(cursor.getColumnIndex("comic_title")),
+                    cursor.getString(cursor.getColumnIndex("comic_path")),
+                    cursor.getString(cursor.getColumnIndex("chapter_name"))
+                    )
+
+                pictures.add(picture)
+
+            }while (cursor.moveToNext())
+
+        }
+
+
+        cursor.close()
+
+        return pictures
+
+    }
+
+
+
+
+
 
 
 

@@ -6,10 +6,7 @@ import com.app.legend.ruminasu.activityes.MainActivity
 import com.app.legend.ruminasu.beans.Comic
 import com.app.legend.ruminasu.beans.Path
 import com.app.legend.ruminasu.presenters.interfaces.IMainActivity
-import com.app.legend.ruminasu.utils.Conf
-import com.app.legend.ruminasu.utils.Database
-import com.app.legend.ruminasu.utils.RuminasuApp
-import com.app.legend.ruminasu.utils.ZipUtils
+import com.app.legend.ruminasu.utils.*
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Scheduler
@@ -32,6 +29,7 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
     /**
      * 检测有没有地址，没有就提示添加，有就按地址查询漫画
+     * 从数据库获取数据
      */
     fun getData(activity: Activity){
 
@@ -49,7 +47,7 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
                 onNext = {
 
-                    checkComics(it)
+                    checkComics(activity,it)
 
                 }
 
@@ -61,10 +59,13 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
     /**
      * 检测数据库内搜索出来的漫画是否为0，如果是，则检测路径表，如果没有路径，就提示选择路径，如果有，则搜索该路径
      */
-    private fun checkComics(comics:List<Comic>){
+    private fun checkComics(activity: Activity,comics:List<Comic>){
 
         if (comics.isNotEmpty()){//有数据
             activty.setData(comics)
+
+            saveComicAndGetBook(activity,comics)
+
         }else{//没有数据
             getPaths()
         }
@@ -192,14 +193,17 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
             for (c in comics){
 
-                //先获取封面，再保存到数据库
-                val book=ZipUtils.getFirstBook(c.path,c.title)
-                c.book=book//赋值，无论是不是null,封面获取完成
-                Database.getDefault(a).addComic(c)
+                if (c.book.isBlank()) {
 
-                val p=comics.indexOf(c)
+                    //先获取封面，再保存到数据库
+                    val book = ComicUtils.getComicBook(c)
+                    c.book = book//赋值，无论是不是null,封面获取完成
+                    Database.getDefault(a).addComic(c)
 
-                it.onNext(p)
+                    val p = comics.indexOf(c)
+
+                    it.onNext(p)
+                }
 
             }
 

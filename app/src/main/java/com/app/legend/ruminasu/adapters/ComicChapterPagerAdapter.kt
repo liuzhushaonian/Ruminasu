@@ -9,7 +9,7 @@ import com.app.legend.ruminasu.beans.Type
 import com.app.legend.ruminasu.fragments.ComicChapterFragment
 
 
-class ComicChapterPagerAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
+class ComicChapterPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     lateinit var list:List<Type>
     lateinit var comic: Comic

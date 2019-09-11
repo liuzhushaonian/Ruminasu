@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.app.legend.ruminasu.R
+import com.app.legend.ruminasu.activityes.callBack.OnChapterClick
 import com.app.legend.ruminasu.beans.Chapter
 import com.app.legend.ruminasu.beans.Comic
 import com.bumptech.glide.Glide
@@ -16,12 +17,15 @@ class ChapterListAdapter : BaseAdapter<ChapterListAdapter.ViewHolder>() {
 
     lateinit var chaptersList:MutableList<Chapter>
     var comic:Comic?=null
+    var onChapterClick:OnChapterClick?=null
+
 
 
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         val c=chaptersList.get(p1)
 
-        val name=c.name.replace(".zip","")
+        var name=c.name.replace(".zip","")
+        name=name.replace("/","")
         p0.name.text=name
 
         Glide.with(p0.view).load(c.book).into(p0.chapterBook)
@@ -37,6 +41,13 @@ class ChapterListAdapter : BaseAdapter<ChapterListAdapter.ViewHolder>() {
 
         viewHolder.view.setOnClickListener {
 
+            if (onChapterClick!=null){
+
+                val p=viewHolder.adapterPosition
+                val c=chaptersList.get(p)
+                onChapterClick!!.onChapterClick(p,c)
+
+            }
 
         }
 

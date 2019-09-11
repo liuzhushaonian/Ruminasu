@@ -13,7 +13,7 @@ abstract class BaseAdapter<T : RecyclerView.ViewHolder> : RecyclerView.Adapter<T
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onBindViewHolder(holder: T, position: Int, payloads: MutableList<Any>) {
-        super.onBindViewHolder(holder, position, payloads)
+    override fun onBindViewHolder(holder: T, position: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

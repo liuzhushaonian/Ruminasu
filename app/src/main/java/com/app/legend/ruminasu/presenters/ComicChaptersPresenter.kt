@@ -5,10 +5,7 @@ import com.app.legend.ruminasu.beans.Chapter
 import com.app.legend.ruminasu.beans.Comic
 import com.app.legend.ruminasu.beans.Type
 import com.app.legend.ruminasu.presenters.interfaces.IComicChaptersFragment
-import com.app.legend.ruminasu.utils.ChaptersNameUtils
-import com.app.legend.ruminasu.utils.Database
-import com.app.legend.ruminasu.utils.RuminasuApp
-import com.app.legend.ruminasu.utils.ZipUtils
+import com.app.legend.ruminasu.utils.*
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -64,6 +61,8 @@ class ComicChaptersPresenter(private var fragment: IComicChaptersFragment):BaseP
                     }else {
 
                         fragment.setChapters(it)
+
+                        getChaptersBook(comic,it)//继续获取封面，如果没有的话
                     }
 
                 }
@@ -78,7 +77,7 @@ class ComicChaptersPresenter(private var fragment: IComicChaptersFragment):BaseP
 
         Observable.create(ObservableOnSubscribe<MutableList<Chapter>> {
 
-            val chapters:MutableList<Chapter> = getChapterByType(comic, type)
+            val chapters:MutableList<Chapter> = ComicUtils.getChapterByType(comic, type)
 //            if (chapters.isEmpty()){
 //
 //
@@ -125,13 +124,16 @@ class ComicChaptersPresenter(private var fragment: IComicChaptersFragment):BaseP
 
             for (chapter in chapters){
 
-                val book=ZipUtils.getChapterBook(comic,chapter)
-                chapter.book=book
+                if (chapter.book.isBlank()) {
 
-                Database.getDefault(RuminasuApp.context).updateChapter(chapter)//更新
+                    val book = ComicUtils.getChapterBook(comic, chapter)
+                    chapter.book = book!!
 
-                val p=chapters.indexOf(chapter);
-                it.onNext(p)
+                    Database.getDefault(RuminasuApp.context).updateChapter(chapter)//更新
+
+                    val p = chapters.indexOf(chapter);
+                    it.onNext(p)
+                }
 
             }
 
@@ -194,86 +196,6 @@ class ComicChaptersPresenter(private var fragment: IComicChaptersFragment):BaseP
                     .addChapter(comic,c)
 
             }
-    }
-
-
-
-    /**
-     * 根据type生成chapter对象，并设置好id，orderName等属性，然后保存到数据库内
-     * 内部可能是zip、文件夹或是直接是图片
-     * wdmnd 难写的一批
-     */
-    private fun getChapterByType(comic: Comic,type:Type):MutableList<Chapter>{
-
-        val chapters:MutableList<Chapter> = ArrayList()
-
-        if (comic.zip>0){//是zip文件
-
-            val z=ZipFile(comic.path)
-            val header=z.fileHeaders
-            if (header.size>0){
-                val h= header[0]
-                if (ChaptersNameUtils.isImage(h.fileName)){//说明里面是纯粹的图片，直接将整个封装成chapter
-
-                    if (comic.title.contains(type.content)) {
-
-
-                        val c = Chapter(comic.title, 1, type.id, -1, comic.book, 0, "",comic.id)
-
-                        chapters.add(c)
-
-                    }
-
-                    return chapters
-                }
-
-                for (f in header){
-
-                    if (f.fileName.contains(type.content)) {
-
-                        val c = Chapter(f.fileName, 0, type.id, -1, "", 0, "",comic.id)
-
-                        chapters.add(c)
-                    }
-                }
-            }
-
-        }else{//是文件夹
-
-            val file=File(comic.path)
-
-            if(file.isDirectory){
-
-                val list:Array<File> = file.listFiles()
-
-                if (list.isNotEmpty()){
-
-                    val p=list[0]
-                    if (ChaptersNameUtils.isImage(p.name)){//判断第一个文件是不是图片，是就直接返回吧，这里面只是图片了
-
-                        if (file.name.contains(type.content)) {
-
-                            val c = Chapter(comic.title, 0, type.id, -1, "", 0, "",comic.id)
-
-                            chapters.add(c)
-                        }
-                        return chapters //??? 这里为啥要返回？？
-                    }
-
-                    for (f in list){
-
-                        if (f.name.contains(type.content)) {
-
-                            val c = Chapter(f.name, 0, type.id, -1, "", 0, "",comic.id)
-
-                            chapters.add(c)
-                        }
-                    }
-                }
-            }
-        }
-
-        return chapters
     }
 
 }

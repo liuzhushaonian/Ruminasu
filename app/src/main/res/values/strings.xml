@@ -14,4 +14,15 @@
 
     <string name="reload">重新导入</string>
 
+    <string name="book">封面</string>
+    
+    <string name="read_mode">阅读模式</string>
+    <string name="top_to_bottom">从上到下</string>
+    <string name="right_to_left">从右到左</string>
+    <string name="left_to_right">从左到右</string>
+    <string name="touch_mode">触摸模式</string>
+    <string name="touch_left">左手模式</string>
+    <string name="touch_right">右手模式</string>
+    <string name="progress">1/23</string>
+
 </resources>

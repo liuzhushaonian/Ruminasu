@@ -5,7 +5,7 @@ import android.os.Environment
 
 object Conf{
 
-   public var PATH:String=Environment.getExternalStorageDirectory().absolutePath+"/release";
+   public var PATH:String=Environment.getExternalStorageState()+"/release";
 
     val HIDE:Int=1
 
@@ -17,5 +17,12 @@ object Conf{
 
     val progress="com.legend.ruminasu.progress"
 
+    const val SHARED="ruminasu_shared"
+
+    const val VERTICAL=0x00100
+
+    const val HORIZONTAL=0x00200
+
+    const val READ_MODE="read_mode"
 
 }

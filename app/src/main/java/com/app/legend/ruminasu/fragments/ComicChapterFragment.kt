@@ -1,6 +1,7 @@
 package com.app.legend.ruminasu.fragments
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.app.legend.ruminasu.R
+import com.app.legend.ruminasu.activityes.ComicViewActivity
+import com.app.legend.ruminasu.activityes.callBack.OnChapterClick
 import com.app.legend.ruminasu.adapters.ChapterListAdapter
 import com.app.legend.ruminasu.beans.Chapter
 import com.app.legend.ruminasu.beans.Comic
@@ -60,33 +63,10 @@ class ComicChapterFragment : BasePresenterFragment<IComicChaptersFragment, Comic
         return view
     }
 
-    private fun startGetData(){
-
-        object :Thread(){
-
-            override fun run() {
-                super.run()
-
-                sleep(3000)
-
-                handler.sendEmptyMessage(10)
-
-            }
-        }.start()
-
-
-    }
-
     private fun getData(){
         comic=arguments?.getParcelable("comic")
         type=arguments?.getParcelable("type")
         presenter.getChapters(comic!!,type!!)
-
-        if (comic!=null){
-
-            Log.d("c---->>>",type.toString())
-
-        }
 
     }
 
@@ -104,25 +84,6 @@ class ComicChapterFragment : BasePresenterFragment<IComicChaptersFragment, Comic
     }
 
 
-
-
-    val handler =Handler(Looper.getMainLooper()){
-
-        when(it.what){
-
-            10 ->{
-                getData()
-
-            }
-
-        }
-
-
-        false
-    }
-
-
-
     /**
      * 初始化网格列表
      */
@@ -138,6 +99,14 @@ class ComicChapterFragment : BasePresenterFragment<IComicChaptersFragment, Comic
 
         chapters.reverse()//倒序
 
+        adapter.onChapterClick=object :OnChapterClick{
+
+            override fun onChapterClick(position: Int, chapter: Chapter) {
+                clickChapter(position,chapter)
+            }
+
+        }
+
         adapter.chaptersList=chapters
 
         recyclerView.adapter=adapter
@@ -145,5 +114,17 @@ class ComicChapterFragment : BasePresenterFragment<IComicChaptersFragment, Comic
         recyclerView.layoutManager=linearLayoutManager
 
     }
+
+    private fun clickChapter(p:Int,chapter: Chapter){
+
+        val intent=Intent(activity,ComicViewActivity::class.java)
+
+        intent.putExtra("comic",comic)
+        intent.putExtra("chapter",chapter)
+
+        startActivity(intent)
+
+    }
+
 
 }
