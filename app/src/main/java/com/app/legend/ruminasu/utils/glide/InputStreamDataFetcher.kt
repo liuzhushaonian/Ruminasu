@@ -6,6 +6,7 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.data.DataFetcher
 import java.io.InputStream
+import java.lang.Exception
 
 class InputStreamDataFetcher(picture: Picture): DataFetcher<InputStream> {
 
@@ -42,7 +43,13 @@ class InputStreamDataFetcher(picture: Picture): DataFetcher<InputStream> {
 
         inputStream=loadInputStream()
 
-        callback.onDataReady(inputStream)
+        if (inputStream!=null) {
+
+            callback.onDataReady(inputStream)
+        }else{
+
+            callback.onLoadFailed(Exception("the inputStream is null!!!"))
+        }
 
     }
 

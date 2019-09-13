@@ -102,7 +102,7 @@ class ComicChapterFragment : BasePresenterFragment<IComicChaptersFragment, Comic
         adapter.onChapterClick=object :OnChapterClick{
 
             override fun onChapterClick(position: Int, chapter: Chapter) {
-                clickChapter(position,chapter)
+                clickChapter(position,chapter,chapters as ArrayList<Chapter>)
             }
 
         }
@@ -115,12 +115,14 @@ class ComicChapterFragment : BasePresenterFragment<IComicChaptersFragment, Comic
 
     }
 
-    private fun clickChapter(p:Int,chapter: Chapter){
+    private fun clickChapter(p:Int,chapter: Chapter,chapters:ArrayList<Chapter>){
 
         val intent=Intent(activity,ComicViewActivity::class.java)
 
         intent.putExtra("comic",comic)
         intent.putExtra("chapter",chapter)
+        intent.putParcelableArrayListExtra("chapters",chapters)
+        intent.putExtra("position",p)
 
         startActivity(intent)
 

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.app.legend.ruminasu.R
 import com.app.legend.ruminasu.beans.Picture
+import com.app.legend.ruminasu.utils.glide.InputStreamAppGlideModule
 import com.app.legend.ruminasu.utils.glide.InputStreamDataModel
 import com.bumptech.glide.Glide
 
@@ -49,5 +50,15 @@ class ChapterViewAdapter : BaseAdapter<ChapterViewAdapter.ViewHolder>() {
 
         val imageView:ImageView=itemView.findViewById(R.id.image_item)
         val view=itemView
+    }
+
+    fun getSizes():Int{
+
+        if (pictures!=null) {
+            return pictures!!.size
+        }
+
+        return 0
+
     }
 }

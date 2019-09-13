@@ -25,4 +25,15 @@ object Conf{
 
     const val READ_MODE="read_mode"
 
+    const val TOUCH_MODE="touch_mode"
+
+    const val TOUCH_LEFT=0x10020
+
+    const val TOUCH_RIGHT=0x10021
+
+    const val UP=0x210
+
+    const val DOWN=0x326
+
+
 }

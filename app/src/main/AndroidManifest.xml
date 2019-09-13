@@ -12,7 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/MyTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activityes.ComicViewActivity"></activity>
+        <activity android:name=".activityes.ComicViewActivity"
+            android:windowSoftInputMode="adjustPan"
+            >
+
+        </activity>
 
         <activity android:name=".activityes.ComicInfoActivity" />
 
@@ -23,9 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".service.BookLoadIntentService"
-            android:exported="false" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

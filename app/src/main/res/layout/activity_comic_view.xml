@@ -33,6 +33,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:id="@+id/bottom_info"
+        android:background="@color/colorAlphaBlack"
+        android:textColor="@color/colorWhite"
+        android:layout_marginEnd="16dp"
         />
 
 
@@ -43,6 +46,7 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:elevation="5dp"
+        android:id="@+id/comicViewToolbar"
         >
 
 
@@ -58,6 +62,7 @@
         android:layout_gravity="bottom"
         android:background="@color/colorWhite"
         android:paddingBottom="16dp"
+        android:elevation="5dp"
         >
 
         <LinearLayout
@@ -131,6 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:id="@+id/touch_mode_container"
             >
 
             <TextView
