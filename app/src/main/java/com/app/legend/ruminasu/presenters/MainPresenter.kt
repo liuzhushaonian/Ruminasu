@@ -1,6 +1,7 @@
 package com.app.legend.ruminasu.presenters
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import com.app.legend.ruminasu.activityes.MainActivity
 import com.app.legend.ruminasu.beans.Comic
@@ -147,6 +148,12 @@ class MainPresenter(activty: IMainActivity?) : BasePresenter<IMainActivity>() {
 
         val list=file.listFiles()
         val comicList:MutableList<Comic> = ArrayList()
+
+        if (list==null){
+
+            return comicList
+        }
+
 
         for (f:File in list){
 
